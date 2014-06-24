@@ -111,11 +111,11 @@ class ViewController: UIViewController {
         resultsDisplayLabel.text = clearString
         view.backgroundColor = UIColor(red:0.99,green:0.9,blue:0.9,alpha:1.0)
     }
-
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-
+    
 }
 
