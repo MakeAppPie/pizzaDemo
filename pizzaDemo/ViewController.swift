@@ -10,66 +10,6 @@
 
 import UIKit
 
-/* --------
-
-Our model for MVC
-keeps data  and calcualtions
-about pizzas
-
-note: for ease in copying I left this in one file
-you can make a seperate file and use import instead.
-
-------------*/
-class Pizza
-{
-    let pi = 3.1415926
-    
-    var pizzaDiameter = 0.0
-    let maxPizza = 24.0
-    var pizzaType = "Cheese"
-    
-    var radius : Double {  //computed property
-    get{   //must define a getter
-        return pizzaDiameter/2.0
-    }
-    set(newRadius){ //optionally define a setter
-        pizzaDiameter = newRadius * 2.0
-    }
-    }
-    
-    var area :  Double {
-    get{
-        return pizzaArea()
-    }
-    }
-    
-    
-    func pizzaArea() -> Double{
-        return radius * radius * pi
-    }
-    
-    func diameterFromString(aString:NSString) -> Double {
-        switch aString {
-        case "Personal":
-            return 8.0
-        case "10\"":
-            return 10.0
-        case "12\"":
-            return 12.0
-        case "16\"","15\"":
-            return 16.0
-        case "18\"":
-            return 18.0
-        case "24\"":
-            return 24.0
-        default:
-            return 0.0
-        }
-    }
-    
-    
-}
-
 
 /*----------
 
@@ -77,12 +17,13 @@ The View Controller
 
 -----------------*/
 
-class ViewController: UIViewController {
+class ViewController: UIViewController,PizzaTypePriceDelegate {
     
     let pizza = Pizza()
     let clearString = "I Like Pizza!"
     
-    @IBOutlet var resultsDisplayLabel : UILabel
+    @IBOutlet var priceLabel : UILabel!   //added 06/29/14
+    @IBOutlet var resultsDisplayLabel : UILabel!
     
     @IBAction func pizzaType(sender : UISegmentedControl) {
         let index = sender.selectedSegmentIndex
@@ -91,8 +32,10 @@ class ViewController: UIViewController {
     }
     
     func displayPizza(){
-        let displayString = NSString(format:"%6.1f inch %@ Pizza",pizza.pizzaDiameter, pizza.pizzaType)
+        let displayString = NSString(format:"%6.1fin %@",pizza.pizzaDiameter, pizza.pizzaType)
+        let priceString = NSString(format:"%6.2f sq in at $%6.2f is $%6.2f",pizza.pizzaArea(),pizza.unitPrice(),pizza.pizzaPrice()) //added 6/29/14
         resultsDisplayLabel.text = displayString
+        priceLabel.text = priceString //added 6/29/14
     }
     
     @IBAction func sizeButton(sender : UIButton) {
@@ -103,18 +46,28 @@ class ViewController: UIViewController {
     
     @IBAction func clearDisplayButton(sender : UIButton) {
         resultsDisplayLabel.text = clearString
+        pizza.pizzaDiameter = 0
+        displayPizza()
     }
-    
     
     override func viewDidLoad() {
         super.viewDidLoad()
         resultsDisplayLabel.text = clearString
+        displayPizza()
         view.backgroundColor = UIColor(red:0.99,green:0.9,blue:0.9,alpha:1.0)
     }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+    func pizzaTypeDidFinish(controller: pizzaTypePriceVC, type: String, price: Double) {
+        pizza.pizzaType = type
+        pizza.pizzaPricePerInSq[pizza.pizzaType] = price
+        controller.navigationController.popViewControllerAnimated(true)
+    }
+    override func prepareForSegue(segue: UIStoryboardSegue!, sender: AnyObject!) {
+        if segue.identifier == "typeprice" {
+            let vc = segue.destinationViewController as pizzaTypePriceVC
+            vc.pizzaType = pizza.pizzaType
+            vc.pizzaPrice = pizza.unitPrice()
+            vc.delegate = self
+        }
     }
 
 }
