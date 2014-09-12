@@ -27,7 +27,7 @@ class ViewController: UIViewController,PizzaTypePriceDelegate {
     
     @IBAction func pizzaType(sender : UISegmentedControl) {
         let index = sender.selectedSegmentIndex
-        pizza.pizzaType = sender.titleForSegmentAtIndex(index)
+        pizza.pizzaType = sender.titleForSegmentAtIndex(index)!
         displayPizza()
     }
     
@@ -39,7 +39,7 @@ class ViewController: UIViewController,PizzaTypePriceDelegate {
     }
     
     @IBAction func sizeButton(sender : UIButton) {
-        pizza.pizzaDiameter = pizza.diameterFromString(sender.titleLabel.text)
+        pizza.pizzaDiameter = pizza.diameterFromString(sender.titleLabel!.text!)
         displayPizza()
     }
     
@@ -59,9 +59,9 @@ class ViewController: UIViewController,PizzaTypePriceDelegate {
     func pizzaTypeDidFinish(controller: pizzaTypePriceVC, type: String, price: Double) {
         pizza.pizzaType = type
         pizza.pizzaPricePerInSq[pizza.pizzaType] = price
-        controller.navigationController.popViewControllerAnimated(true)
+        controller.navigationController?.popViewControllerAnimated(true)
     }
-    override func prepareForSegue(segue: UIStoryboardSegue!, sender: AnyObject!) {
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject!) {
         if segue.identifier == "typeprice" {
             let vc = segue.destinationViewController as pizzaTypePriceVC
             vc.pizzaType = pizza.pizzaType

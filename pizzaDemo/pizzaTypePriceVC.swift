@@ -38,7 +38,7 @@ class pizzaTypePriceVC: UIViewController {
     }
 
     @IBAction func doneButton(sender: UIBarButtonItem) {
-        if delegate {
+        if (delegate != nil) {
             delegate!.pizzaTypeDidFinish(self, type: pizzaType, price: pizzaPrice)
         }
     }
